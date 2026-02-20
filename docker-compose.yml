@@ -1,0 +1,31 @@
+name: '${APP_NAME}'
+
+services:
+  api-main:
+    container_name: ${APP_NAME}-main
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports: ['${APP_PORT}:${APP_PORT}']
+    depends_on: ['db']
+    env_file: .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+  db:
+    container_name: ${APP_NAME}-db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - ./docker/data/postgresql:/var/lib/postgresql
+    ports: ['5432:5432']
+    env_file: .env
+
+volumes:
+  docker-data-postgresql:
