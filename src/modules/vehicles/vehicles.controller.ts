@@ -14,9 +14,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { VehiclesService } from './vehicles.service';
-import { JwtAuthGuard } from 'src/modules/auth';
-import { IJwtPayloadDecorator } from 'src/common/jwt';
-import { IJwtPayload } from 'src/common/jwt';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/modules/auth';
+import { IJwtPayloadDecorator, IJwtPayload, CurrentUser } from 'src/common/jwt';
 import { PaginationInboundDto, PaginationOutboundDto } from 'src/common/dtos';
 import {
   VehicleOutboundDto,
@@ -37,12 +36,12 @@ export class VehiclesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOkResponse({ type: VehicleDetailOutboundDto })
   @Get(':id')
   public async getOne(
     @Param('id', ParseIntPipe) id: number,
-    @IJwtPayloadDecorator() payload?: IJwtPayload,
+    @CurrentUser() payload?: IJwtPayload,
   ) {
     return this.vehiclesService.getOne(id, payload?.id);
   }
